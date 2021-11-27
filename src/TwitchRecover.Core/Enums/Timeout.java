@@ -10,7 +10,7 @@
  * If not see http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  *  @author Daylam Tayari daylam@tayari.gg https://github.com/daylamtayari
- *  @version 2.0aH     2.0a Hotfix
+ *  @version 2.0b
  *  Github project home page: https://github.com/TwitchRecover
  *  Twitch Recover repository: https://github.com/TwitchRecover/TwitchRecover
  */
@@ -21,8 +21,16 @@ public enum Timeout {
     CONNECT(60000),
     READ(60000);
 
-    public int time;    //Timeout time in milliseconds.
+    int time;    //Timeout time in milliseconds.
     Timeout(int m){
         time=m;
+    }
+
+    /**
+     * Accessor for the time variable.
+     * @return int  Value of the time variable.
+     */
+    public int getTime(){
+        return time;
     }
 }

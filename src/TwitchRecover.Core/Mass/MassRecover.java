@@ -10,7 +10,7 @@
  * If not see http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  *  @author Daylam Tayari daylam@tayari.gg https://github.com/daylamtayari
- *  @version 2.0aH     2.0a Hotfix
+ *  @version 2.0b
  *  Github project home page: https://github.com/TwitchRecover
  *  Twitch Recover repository: https://github.com/TwitchRecover/TwitchRecover
  */
@@ -140,7 +140,7 @@ public class MassRecover {
     private void processStream(String url){
         Live live=new Live();
         if(url.contains("twitch.tv/")){
-            live.setChannel(Compute.singleRegex("twitch.tv/([a-z0-9A-Z]*)", url));
+            live.setChannel(Compute.singleRegex("twitch.tv/([a-z0-9A-Z]*)", url.toLowerCase()));
         }
         else{
             live.setChannel(url);
@@ -182,7 +182,7 @@ public class MassRecover {
      * output file.
      */
     private void computeFN(){
-        fn=FileIO.computeFN(ct, "Mass-"+Math.random()*1000);
+        fn=FileIO.computeFN(ct, "Mass-"+((int) (Math.random()*1000000)));
     }
 
     /**

@@ -10,7 +10,7 @@
  * If not see http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  *  @author Daylam Tayari daylam@tayari.gg https://github.com/daylamtayari
- *  @version 2.0aH     2.0a Hotfix
+ *  @version 2.0b
  *  Github project home page: https://github.com/TwitchRecover
  *  Twitch Recover repository: https://github.com/TwitchRecover/TwitchRecover
  */
@@ -38,7 +38,7 @@ public class CoreHandler {
      * @return boolean  Boolean value which is true if the URL is indeed a Twitch video link and false otherwise.
      */
     protected static boolean isVideo(String url){
-        return Compute.singleRegex("(twitch.tv/[0-9]*)", url)!=null;
+        return Compute.singleRegex("(twitch.tv/[0-9]*)", url.toLowerCase())!=null;
     }
 
     /**
@@ -87,10 +87,10 @@ public class CoreHandler {
         System.out.print("\n\nQualities available:");
         int i=1;
         for(Quality qual: feeds.getQualities()){
-            System.out.print("\n"+i+". "+qual.text);
+            System.out.print("\n"+i+". "+qual.getText());
             i++;
         }
-        System.out.print("\nPlease enter the desired quality you want to "+o.text+": ");
+        System.out.print("\nPlease enter the desired quality you want to "+o.getText()+": ");
         String selection=CLIHandler.sc.next();
         return Integer.parseInt(selection);
     }
@@ -104,12 +104,12 @@ public class CoreHandler {
      * @return String   String value which represents the highlight URL the user inputted.
      */
     protected static String promptURL(oType op, vType v){
-        System.out.print("\nPlease enter the link of the "+v.text+" to "+op.text+": ");
+        System.out.print("\nPlease enter the link of the "+v.getText()+" to "+op.getText()+": ");
         String highlightURL=CLIHandler.sc.next();
         while(!CoreHandler.isVideo(highlightURL)){
             System.out.print(
-                      "\n\nERROR: Invalid "+v.text+" link."
-                    + "\nPlease enter a valid "+v.text+" URL."
+                      "\n\nERROR: Invalid "+v.getText()+" link."
+                    + "\nPlease enter a valid "+v.getText()+" URL."
             );
             highlightURL=CLIHandler.sc.next();
         }

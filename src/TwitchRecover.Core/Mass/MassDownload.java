@@ -10,7 +10,7 @@
  * If not see http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  *  @author Daylam Tayari daylam@tayari.gg https://github.com/daylamtayari
- *  @version 2.0aH     2.0a Hotfix
+ *  @version 2.0b
  *  Github project home page: https://github.com/TwitchRecover
  *  Twitch Recover repository: https://github.com/TwitchRecover/TwitchRecover
  */
@@ -92,7 +92,7 @@ public class MassDownload {
         vod.setFP(fp);
         vod.retrieveID(url);
         String feed=vod.getFeed(1);
-        vod.downloadVOD(fe, feed);
+        //vod.downloadVOD(fe, feed);
     }
 
     /**
@@ -143,7 +143,7 @@ public class MassDownload {
         Clips clip=new Clips();
         clip.setFP(fp);
         if(url.lastIndexOf(".mp4")==url.length()-5){
-            clip.setSlug(String.valueOf(Math.random()*1000));
+            clip.setSlug(String.valueOf((int) (Math.random()*1000000)));
             String ffp=clip.getDFP();
             try {
                 Download.download(url, ffp);

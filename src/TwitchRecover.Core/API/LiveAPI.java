@@ -10,13 +10,14 @@
  * If not see http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  *  @author Daylam Tayari daylam@tayari.gg https://github.com/daylamtayari
- *  @version 2.0aH     2.0a Hotfix
+ *  @version 2.0b
  *  Github project home page: https://github.com/TwitchRecover
  *  Twitch Recover repository: https://github.com/TwitchRecover/TwitchRecover
  */
 
 package TwitchRecover.Core.API;
 
+import static TwitchRecover.Core.API.API.USHER;
 import TwitchRecover.Core.Feeds;
 
 /**
@@ -34,7 +35,7 @@ public class LiveAPI {
      */
     public static Feeds getLiveFeeds(String channel){
         String[] auth=getLiveToken(channel);    //0: Token; 1: Signature.
-        return API.getPlaylist("https://usher.ttvnw.net/api/channel/hls/"+channel+".m3u8?sig="+auth[1]+"&token="+auth[0]+"&allow_source=true&allow_audio_only=true");
+        return API.getPlaylist(USHER+"/api/channel/hls/"+channel+".m3u8?sig="+auth[1]+"&token="+auth[0]+"&allow_source=true&allow_audio_only=true");
     }
 
     /**

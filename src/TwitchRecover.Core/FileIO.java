@@ -10,7 +10,7 @@
  * If not see http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  *  @author Daylam Tayari daylam@tayari.gg https://github.com/daylamtayari
- *  @version 2.0aH     2.0a Hotfix
+ *  @version 2.0b
  *  Github project home page: https://github.com/TwitchRecover
  *  Twitch Recover repository: https://github.com/TwitchRecover/TwitchRecover
  */
@@ -130,7 +130,7 @@ public class FileIO {
     protected static void exportFeeds(Feeds feeds, String fp){
         ArrayList<String> results=new ArrayList<String>();
         for(int i=0; i<feeds.getFeeds().size(); i++){
-            results.add("# Quality: "+feeds.getQuality(i).text);
+            results.add("# Quality: "+feeds.getQuality(i).getText());
             results.add(feeds.getFeed(i));
         }
         exportResults(results, fp);
@@ -148,7 +148,7 @@ public class FileIO {
      */
     public static String convert(String fp, FileExtension fe){
         File old=new File(fp);
-        String newFP=fp.substring(0, fp.lastIndexOf("."))+fe.fileExtension;
+        String newFP=fp.substring(0, fp.lastIndexOf("."))+fe.getFE();
         File newF=new File(newFP);
         old.renameTo(newF);
         return newF.getAbsolutePath();

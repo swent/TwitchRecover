@@ -10,7 +10,7 @@
  * If not see http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  *  @author Daylam Tayari daylam@tayari.gg https://github.com/daylamtayari
- *  @version 2.0aH     2.0a Hotfix
+ *  @version 2.0b
  *  Github project home page: https://github.com/TwitchRecover
  *  Twitch Recover repository: https://github.com/TwitchRecover/TwitchRecover
  */
@@ -51,7 +51,7 @@ public class Download {
         String extension=url.substring(url.lastIndexOf("."));
         URL dURL=new URL(url);
         File dFile=new File(fp+extension);
-        FileUtils.copyURLToFile(dURL, dFile, Timeout.CONNECT.time, Timeout.READ.time);
+        FileUtils.copyURLToFile(dURL, dFile, Timeout.CONNECT.getTime(), Timeout.READ.getTime());
         return dFile.getAbsolutePath();
     }
 
@@ -86,7 +86,7 @@ public class Download {
             downloadedFile = File.createTempFile(prefix + "-", "." + FilenameUtils.getExtension(dURL.getPath()), new File(FileHandler.TEMP_FOLDER_PATH + File.separator));    //Creates the temp file.
         }
         downloadedFile.deleteOnExit();
-        FileUtils.copyURLToFile(dURL, downloadedFile, Timeout.CONNECT.time, Timeout.READ.time);
+        FileUtils.copyURLToFile(dURL, downloadedFile, Timeout.CONNECT.getTime(), Timeout.READ.getTime());
         return downloadedFile;
     }
 
@@ -122,6 +122,7 @@ public class Download {
                             break;
                         }
                         catch(Exception ignored) {}
+                        currentTries++;
                     }
                 }
             });

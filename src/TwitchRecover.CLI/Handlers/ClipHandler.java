@@ -10,7 +10,7 @@
  * If not see http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  *  @author Daylam Tayari daylam@tayari.gg https://github.com/daylamtayari
- *  @version 2.0aH     2.0a Hotfix
+ *  @version 2.0b
  *  Github project home page: https://github.com/TwitchRecover
  *  Twitch Recover repository: https://github.com/TwitchRecover/TwitchRecover
  */
@@ -20,6 +20,7 @@ package TwitchRecover.CLI.Handlers;
 import TwitchRecover.CLI.CLIHandler;
 import TwitchRecover.Core.Clips;
 import TwitchRecover.Core.Compute;
+import TwitchRecover.Core.VODInfo;
 import TwitchRecover.Core.WebsiteRetrieval;
 
 import java.util.ArrayList;
@@ -91,17 +92,32 @@ public class ClipHandler {
      */
     private boolean checkClipURL(String url){
         if(url.contains("clips.twitch.tv")){
-            return !Compute.checkNullString(Compute.singleRegex("(clips.twitch.tv/[a-zA-Z]*)", url));
+            return checkURLType("(clips.twitch.tv/[a-zA-Z0-9-_]*)", url);
         }
         else if(url.contains("twitch.tv/clips")){
-            return !Compute.checkNullString(Compute.singleRegex("(twitch.tv/clips/[a-zA-Z]*)", url));
+            return checkURLType("(twitch.tv/clips/[a-zA-Z0-9-_]*)", url);
+        }
+        else if(url.contains("twitch.tv/")){
+            return checkURLType("(twitch.tv/[a-zA-Z0-9-_]*/clips/[a-zA-Z0-9-_]*)", url);
         }
         else if(url.contains("clips-media-assets2.twitch.tv")){
-            return !Compute.checkNullString(Compute.singleRegex("(clips-media-assets2.twitch.tv\\/[0-9]*-offset-[0-9]*.mp4)", url));
+            return checkURLType("(clips-media-assets2.twitch.tv\\/[0-9]*-offset-[0-9]*.mp4)", url);
         }
         else{
-            return !Compute.checkNullString(Compute.singleRegex("([a-z]*)", url));
+            return checkURLType("([a-z]*)", url);
         }
+    }
+
+    /**
+     * This method processes the checking
+     * of a URL type, by checking if a
+     * URL matches a given regex value.
+     * @param regex     String value representing the regex to check the URL for.
+     * @param url       String value representing the URL to check.
+     * @return boolean  Boolean value that is false if the URL does not match the regex pattern and false otherwise.
+     */
+    private boolean checkURLType(String regex, String url){
+        return !Compute.checkNullString(Compute.singleRegex(regex, url.toLowerCase()));
     }
 
     /**
@@ -161,8 +177,8 @@ public class ClipHandler {
         }
         else{
             System.out.print("\nPlease input the stream link from an analytics website (Twitch Tracker or Streamscharts): ");
-            String[] data= WebsiteRetrieval.getData(CLIHandler.sc.next());
-            clip.setValues(Long.parseLong(data[1]), Long.parseLong(data[3].substring(0, data[3].indexOf("."))));
+            VODInfo data= WebsiteRetrieval.getData(CLIHandler.sc.next());
+            clip.setValues(data.getID(), data.getD());
         }
         System.out.print(
                   "\nPlease enter y if you have Wfuzz installed and n if not: "

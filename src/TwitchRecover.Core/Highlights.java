@@ -10,7 +10,7 @@
  * If not see http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  *  @author Daylam Tayari daylam@tayari.gg https://github.com/daylamtayari
- *  @version 2.0aH     2.0a Hotfix
+ *  @version 2.0b
  *  Github project home page: https://github.com/TwitchRecover
  *  Twitch Recover repository: https://github.com/TwitchRecover/TwitchRecover
  */
@@ -21,6 +21,7 @@ import TwitchRecover.Core.API.VideoAPI;
 import TwitchRecover.Core.Downloader.Download;
 import TwitchRecover.Core.Enums.ContentType;
 import TwitchRecover.Core.Enums.FileExtension;
+import TwitchRecover.Core.Enums.VideoType;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -66,7 +67,7 @@ public class Highlights {
     public void downloadHighlight(FileExtension fe, String feed){
         computeFN();
         System.out.print("\nDownloading highlight...");
-        fFP=fp+fn+fe.fileExtension;
+        fFP=fp+fn+fe.getFE();
         try{
             Download.m3u8Download(feed, fFP);
         }
@@ -85,7 +86,7 @@ public class Highlights {
         String url=Compute.URLCompute(highlightInfo[0], streamID, timestamp);
         //Adapt URL to a highlight M3U8 URL.
         url=url.substring(0, url.indexOf("index-dvr.m3u8"));
-        url+="highlight-"+highlightID+FileExtension.M3U8.fileExtension;
+        url+="highlight-"+highlightID+FileExtension.M3U8.getFE();
         retrievedURLs=Fuzz.verifyURL(url);
         return retrievedURLs;
     }
@@ -130,7 +131,7 @@ public class Highlights {
      */
     public void exportResults(){
         computeFN();
-        fFP=fp+fn+FileExtension.TXT.fileExtension;
+        fFP=fp+fn+FileExtension.TXT.getFE();
         FileIO.exportResults(retrievedURLs, fFP);
     }
 
@@ -140,7 +141,7 @@ public class Highlights {
      */
     public void exportFeed(){
         computeFN();
-        fFP=fp+fn+FileExtension.TXT.fileExtension;
+        fFP=fp+fn+FileExtension.TXT.getFE();
         FileIO.exportFeeds(feeds, fFP);
     }
 
@@ -154,7 +155,7 @@ public class Highlights {
     public Feeds getHighlightFeeds(){
         feeds=VideoAPI.getVODFeeds(highlightID);
         if(feeds.getFeeds().isEmpty()){
-            feeds=VideoAPI.getSubVODFeeds(highlightID, true);
+            feeds=VideoAPI.getSubVODFeeds(highlightID, VideoType.HIGHLIGHT);
         }
         return feeds;
     }

@@ -10,7 +10,7 @@
  * If not see http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  *  @author Daylam Tayari daylam@tayari.gg https://github.com/daylamtayari
- *  @version 2.0aH     2.0a Hotfix
+ *  @version 2.0b
  *  Github project home page: https://github.com/TwitchRecover
  *  Twitch Recover repository: https://github.com/TwitchRecover/TwitchRecover
  */
@@ -47,6 +47,8 @@ public class Clips {
     private String fn;                  //String value representing the file name of the downloaded clip.
     private ArrayList<String> results;  //String arraylist containing all of the fuzz results;
     private String fFP;                 //String value which represents the final file path of the downloaded object.
+    private Integer fuzzStart;          //Integer value representing a custom fuzzing start time. If it is null, the start will be 0.
+    private Integer fuzzEnd;            //Integer value representing a custom fuzzing end time. If it is null, it will be set to the stream duration.
 
     /**
      * The constructor of a
@@ -64,12 +66,12 @@ public class Clips {
      */
     public void download(){
         computeFN();
-        fFP=fp+fn+FileExtension.MP4.fileExtension;
+        fFP=fp+fn;
         try{
             Download.download(url, fFP);
         }
         catch(Exception ignored){}
-        System.out.print("\nCLip downloaded at: "+fFP);
+        System.out.print("\nCLip downloaded at: "+fFP+FileExtension.MP4.getFE());
     }
 
     /**
@@ -87,7 +89,13 @@ public class Clips {
      * stream (fuzzing the possibilities).
      */
     public void recover(){
-        results=Fuzz.fuzz(streamID, duration, wfuzz);
+        if(fuzzEnd==null){
+            fuzzEnd=(((int) duration) * 60) + 2000;
+        }
+        if(fuzzStart==null){
+            fuzzStart=0;
+        }
+        results=Fuzz.fuzz(streamID, fuzzStart, fuzzEnd, wfuzz);
     }
 
     /**
@@ -96,7 +104,7 @@ public class Clips {
      */
     public void exportResults(){
         computeFN();
-        fFP=fp+fn+FileExtension.TXT.fileExtension;
+        fFP=fp+fn+FileExtension.TXT.getFE();
         FileIO.exportResults(results, fFP);
     }
 
@@ -123,10 +131,13 @@ public class Clips {
      */
     private String parseSlug(String url){
         if(url.contains("clips.twitch.tv")){
-            return Compute.singleRegex("clips.twitch.tv/([a-zA-Z]*)", url);
+            return Compute.singleRegex("clips.twitch.tv/([a-zA-Z0-9-_]*)", url);
         }
         else if(url.contains("twitch.tv/clips")){
-            return Compute.singleRegex("twitch.tv/clips/([a-zA-Z]*)", url);
+            return Compute.singleRegex("twitch.tv/clips/([a-zA-Z0-9-_]*)", url);
+        }
+        else if(url.contains("twitch.tv/")){
+            return Compute.singleRegex("twitch.tv/[a-zA-Z0-9-_]*/clips/(a-zA-Z0-9-_]*)", url);
         }
         else{
             return url;
@@ -164,7 +175,7 @@ public class Clips {
      */
     public String getDFP(){
         computeFN();
-        return fp+fn+FileExtension.MP4.fileExtension;
+        return fp+fn+FileExtension.MP4.getFE();
     }
 
     /**
@@ -227,6 +238,22 @@ public class Clips {
      */
     public void setSlug(String url){
         slug=parseSlug(url);
+    }
+
+    /**
+     * Mutator for the fuzzStart variable.
+     * @param start     Integer value representing a custom fuzzing start time.
+     */
+    public void setFuzzStart(int start){
+        fuzzStart=start;
+    }
+
+    /**
+     * Mutator for the fuzzEnd variable.
+     * @param end   Integer value representing a custom fuzzing end time.
+     */
+    public void setFuzzEnd(int end){
+        fuzzEnd=end;
     }
 
     /**

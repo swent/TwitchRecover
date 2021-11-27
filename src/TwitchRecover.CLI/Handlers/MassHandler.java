@@ -10,7 +10,7 @@
  * If not see http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  *  @author Daylam Tayari daylam@tayari.gg https://github.com/daylamtayari
- *  @version 2.0aH     2.0a Hotfix
+ *  @version 2.0b
  *  Github project home page: https://github.com/TwitchRecover
  *  Twitch Recover repository: https://github.com/TwitchRecover/TwitchRecover
  */
@@ -119,9 +119,8 @@ public class MassHandler {
      * @return String   String value representing the retrieved URL.
      */
     public static String getURL(vType v, oType o){
-        System.out.print("\n\nPlease enter the URL of the " + v.text + " to " + o.text + ":\n");
-        String input=CLIHandler.sc.next();
-        return input;
+        System.out.print("\n\nPlease enter the URL of the " + v.getText() + " to " + o.getText() + ":\n");
+        return CLIHandler.sc.next();
     }
 
     /**

@@ -10,7 +10,7 @@
  * If not see http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  *  @author Daylam Tayari daylam@tayari.gg https://github.com/daylamtayari
- *  @version 2.0aH     2.0a Hotfix
+ *  @version 2.0b
  *  Github project home page: https://github.com/TwitchRecover
  *  Twitch Recover repository: https://github.com/TwitchRecover/TwitchRecover
  */
@@ -100,7 +100,7 @@ public class VideoHandler {
                   "\nPlease enter the FILE PATH of where you want the unmuted M3U8 saved:"
                 + "\nFile path: "
         );
-        String fp=FileIO.adjustFP(CLIHandler.sc.next())+FileIO.computeFN(ContentType.M3U8, String.valueOf((int) (Math.random() * 10000000)))+FileExtension.M3U8.fileExtension;
+        String fp=FileIO.adjustFP(CLIHandler.sc.next())+FileIO.computeFN(ContentType.M3U8, String.valueOf((int) (Math.random()*1000000)))+FileExtension.M3U8.getFE();
         System.out.print("\n'Unmuting'...");
         VODRetrieval.unmute(value, isFile, fp);
         System.out.print("\nUnmuted file at: "+fp);
@@ -119,10 +119,10 @@ public class VideoHandler {
                 + "\nFile path: "
         );
         String fp= FileIO.adjustFP(CLIHandler.sc.next());
-        String fn=FileIO.computeFN(ContentType.Video, String.valueOf((int) (Math.random() * 10000000)));
+        String fn=FileIO.computeFN(ContentType.Video, String.valueOf((int) (Math.random()*1000000)));
         FileExtension fe=CoreHandler.userFE();
-        String fFP=fp+fn+fe.fileExtension;
-        System.out.print("\nDowloading...");
+        String fFP=fp+fn+fe.getFE();
+        System.out.print("\nDownloading...");
         try {
             Download.m3u8Download(url, fFP);
         }

@@ -10,7 +10,7 @@
  * If not see http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  *  @author Daylam Tayari daylam@tayari.gg https://github.com/daylamtayari
- *  @version 2.0aH     2.0a Hotfix
+ *  @version 2.0b
  *  Github project home page: https://github.com/TwitchRecover
  *  Twitch Recover repository: https://github.com/TwitchRecover/TwitchRecover
  */
@@ -18,6 +18,7 @@
 package TwitchRecover.Core;
 
 import TwitchRecover.Core.Downloader.Download;
+import TwitchRecover.Core.Enums.BruteForce;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,17 +33,15 @@ public class VODRetrieval {
      * This method retrieves the VOD M3U8
      * URLs from given String values.
      * @param name                  String value representing the streamer's name.
-     * @param sID                   String value representing the stream ID.
-     * @param ts                    String value representing the timestamp of the stream.
+     * @param streamID              Long value representing the stream ID.
+     * @param timestamp             Long value representing the timestamp of the stream.
      * @param bf                    Boolean value which represents whether a VOD brute force should be carried out.
      * @return ArrayList<String>    String arraylist which represents all of the working VOD M3U8 URLs.
      */
-    public static ArrayList<String> retrieveVOD(String name, String sID, String ts, boolean bf){
+    public static ArrayList<String> retrieveVOD(String name, long streamID, long timestamp, BruteForce bf){
         ArrayList<String> results=new ArrayList<String>();
-        long timestamp=Compute.getUNIX(ts);
-        long streamID=Long.parseLong(sID);
-        if(bf){
-            results=Fuzz.BFURLs(name, streamID, timestamp);
+        if(bf!=BruteForce.None){
+            results=Fuzz.BFURLs(name, streamID, timestamp, bf);
         }
         else{
             String url=Compute.URLCompute(name, streamID, timestamp);
@@ -60,7 +59,7 @@ public class VODRetrieval {
      * @return Feeds    Feeds object containing all of the possible feeds for that particular VOD.
      */
     public static Feeds retrieveVODFeeds(String baseURL){
-        String coreURL=Compute.singleRegex("(https:\\/\\/[a-z0-9\\-]*.[a-z_]*.[net||com||tv]*\\/[a-z0-9_]*\\/)chunked\\/index-dvr.m3u8", baseURL);
+        String coreURL=Compute.singleRegex("(https:\\/\\/[a-z0-9\\-]*.[a-z_]*.[net||com||tv]*\\/[a-z0-9_]*\\/)chunked\\/index-dvr.m3u8", baseURL.toLowerCase());
         return Fuzz.fuzzQualities(coreURL, "/index-dvr.m3u8");
     }
 
@@ -70,14 +69,14 @@ public class VODRetrieval {
      * @param url   Twitch VOD link (or raw ID) of a VOD.
      */
     public static Long retrieveID(String url){
-        if(Compute.singleRegex("(twitch.tv\\/[a-z0-9]*\\/v\\[0-9]*)", url)!=null){
-            return Long.parseLong(Compute.singleRegex("twitch.tv\\/[a-zA-Z0-9]*\\/v\\/([0-9]*)", url));
+        if(Compute.singleRegex("(twitch.tv\\/[a-z0-9]*\\/v\\[0-9]*)", url.toLowerCase())!=null){
+            return Long.parseLong(Compute.singleRegex("twitch.tv\\/[a-zA-Z0-9]*\\/v\\/([0-9]*)", url.toLowerCase()));
         }
-        else if(Compute.singleRegex("(twitch.tv\\/[a-z0-9]*\\/videos\\/[0-9]*)", url)!=null){
-            return Long.parseLong(Compute.singleRegex("twitch.tv\\/[a-z0-9]*\\/videos\\/([0-9]*)", url));
+        else if(Compute.singleRegex("(twitch.tv\\/[a-z0-9]*\\/videos\\/[0-9]*)", url.toLowerCase())!=null){
+            return Long.parseLong(Compute.singleRegex("twitch.tv\\/[a-z0-9]*\\/videos\\/([0-9]*)", url.toLowerCase()));
         }
-        else if(Compute.singleRegex("(twitch.tv\\/videos\\/[0-9]*)", url)!=null){
-            return Long.parseLong(Compute.singleRegex("twitch.tv\\/videos\\/([0-9]*)", url));
+        else if(Compute.singleRegex("(twitch.tv\\/videos\\/[0-9]*)", url.toLowerCase())!=null){
+            return Long.parseLong(Compute.singleRegex("twitch.tv\\/videos\\/([0-9]*)", url.toLowerCase()));
         }
         else{
             return Long.parseLong(url);

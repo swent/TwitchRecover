@@ -10,7 +10,7 @@
  * If not see http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  *  @author Daylam Tayari daylam@tayari.gg https://github.com/daylamtayari
- *  @version 2.0aH     2.0a Hotfix
+ *  @version 2.0b
  *  Github project home page: https://github.com/TwitchRecover
  *  Twitch Recover repository: https://github.com/TwitchRecover/TwitchRecover
  */
@@ -21,6 +21,7 @@ import TwitchRecover.CLI.CLIHandler;
 import TwitchRecover.CLI.Enums.oType;
 import TwitchRecover.CLI.Enums.vType;
 import TwitchRecover.CLI.Prompts;
+import TwitchRecover.Core.Enums.BruteForce;
 import TwitchRecover.Core.Enums.FileExtension;
 import TwitchRecover.Core.Feeds;
 import TwitchRecover.Core.VOD;
@@ -77,7 +78,7 @@ public class VODHandler {
         );
         vod.setFP(CLIHandler.sc.next());
         System.out.print("\nDownloading...");
-        vod.downloadVOD(fe, feeds.getFeed(quality-1));
+        vod.downloadVOD(fe, feeds.getFeed(quality-1), vod.getVodInfo().getID());
         System.out.print("\nFile downloaded at: " + vod.getFFP());
     }
 
@@ -94,7 +95,7 @@ public class VODHandler {
             System.out.print("\nPlease enter the stream analytics link (supports Twitch Tracker and Stream Charts): ");
             String url=CLIHandler.sc.next();
             vod.retrieveVODURL(url);
-            wf=false;
+            vod.setBF(BruteForce.None);
         }
         else{
             System.out.print("\nPlease enter the channel name: ");
@@ -103,11 +104,16 @@ public class VODHandler {
             vod.setStreamID(CLIHandler.sc.next());
             System.out.print("\nPlease enter whether or not you want to brute force to the minute ('y' for yes and 'n' for no): ");
             wf=CLIHandler.sc.next().equalsIgnoreCase("y");
-            vod.setBF(wf);
+            if(wf){
+                vod.setBF(BruteForce.Minute);
+            }
+            else{
+                vod.setBF(BruteForce.None);
+            }
             System.out.print("\nPlease enter the start time of the stream: ");
-            vod.setTimestamp(CLIHandler.sc.next());
+            vod.setTimestamp(CLIHandler.sc.next()+" "+CLIHandler.sc.next());
         }
-        vod.retrieveVOD(wf);
+        vod.retrieveVOD();
         Feeds feeds=vod.retrieveVODFeeds();
         if(feeds==null){
             System.out.print(

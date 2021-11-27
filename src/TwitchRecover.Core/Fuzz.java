@@ -10,13 +10,14 @@
  * If not see http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  *  @author Daylam Tayari daylam@tayari.gg https://github.com/daylamtayari
- *  @version 2.0aH     2.0a Hotfix
+ *  @version 2.0b
  *  Github project home page: https://github.com/TwitchRecover
  *  Twitch Recover repository: https://github.com/TwitchRecover/TwitchRecover
  */
 
 package TwitchRecover.Core;
 
+import TwitchRecover.Core.Enums.BruteForce;
 import TwitchRecover.Core.Enums.Quality;
 
 import java.io.BufferedReader;
@@ -33,22 +34,24 @@ import java.util.regex.Pattern;
  * core fuzzing method which is called to find a clip.
  */
 public class Fuzz {
+    private static ArrayList<String> domains;
+
     /**
      * This is the core method for fuzzing all of the
      * clips of a particular stream.
      * @param streamID Long value which represents the stream ID for which clips should be fuzzed for.
-     * @param duration Long value which represents the duration of the stream.
+     * @param start    Integer value representing the fuzzing start value.
+     * @param end      Integer value representing the fuzzing end value.
      * @param wfuzz    Boolean which represents whether Wfuzz is installed and should be used or not.
      * @return ArrayList<String>    String arraylist which holds all of the results of clips.
      */
-    public static ArrayList<String> fuzz(long streamID, long duration, boolean wfuzz) {
+    public static ArrayList<String> fuzz(long streamID, int start, int end, boolean wfuzz) {
         ArrayList<String> results = new ArrayList<String>();
-        int reps = (((int) duration) * 60) + 2000;
         if(wfuzz) {
-            results = wfuzz(streamID, reps);
+            results = wfuzz(streamID, start, end);
         }
         else {
-            results = jFuzz(streamID, reps);
+            results = jFuzz(streamID, start, end);
         }
         return results;
     }
@@ -56,12 +59,13 @@ public class Fuzz {
     /**
      * Method which utlises Wfuzz for fuzzing clips from a stream.
      * @param streamID Long value which represents the stream ID for which clips should be fuzzed for.
-     * @param reps     Integer value which represents the maximum range for a particular stream.
+     * @param start    Integer value representing the start value of the fuzzing.
+     * @param end      Integer value representing the end value of the fuzzing.
      * @return ArrayList<String>    String arraylist which holds all of the results of clips.
      */
-    private static ArrayList<String> wfuzz(long streamID, int reps) {
+    private static ArrayList<String> wfuzz(long streamID, int start, int end) {
         ArrayList<String> fuzzRes = new ArrayList<String>();
-        String command = "wfuzz -o csv -z range,0-" + reps + " --hc 404 https://clips-media-assets2.twitch.tv/" + streamID + "-offset-FUZZ.mp4";
+        String command = "wfuzz -o csv -z range,"+start+"-" + end + " --hc 404 https://clips-media-assets2.twitch.tv/" + streamID + "-offset-FUZZ.mp4";
         try {
             Process process = Runtime.getRuntime().exec(command);
             BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -74,7 +78,7 @@ public class Fuzz {
                 if(atResults) {
                     Matcher wm = wp.matcher(line);
                     if(wm.find()) {
-                        if(Integer.valueOf(wm.group(1)) % 900 == 0 && true) {   //TODO: Fix the CLI boolean usage.
+                        if(Integer.parseInt(wm.group(1)) % 900 == 0 && true) {   //TODO: Fix the CLI boolean usage.
                             quarters++;
                             if(found==1){
                                 System.out.print("\n" + (quarters / 4) + " hours into the VOD. " + found + " clip found so far. Continuing to find clips...");
@@ -105,13 +109,14 @@ public class Fuzz {
      * clips from a given stream.
      * NOTICE: Extremely slow.
      * @param streamID Long value which represents the stream ID for which clips should be fuzzed for.
-     * @param reps     Integer value which represents the maximum range for a particular stream.
+     * @param start    Integer value representing the start fuzzing value.
+     * @param end      Integer value representing the end fuzzing value.
      * @return ArrayList<String>    String arraylist which holds all of the results of clips.
      */
-    private static ArrayList<String> jFuzz(long streamID, int reps) {
+    private static ArrayList<String> jFuzz(long streamID, int start, int end) {
         ArrayList<String> jfuzzRes = new ArrayList<String>();
         String baseURL = "https://clips-media-assets2.twitch.tv/" + streamID + "-offset-";
-        for(int i = 0; i < reps; i++) {
+        for(int i = start; i < end; i++) {
             String clip = baseURL + i + ".mp4";
             try {
                 new URL(clip).openStream();
@@ -122,42 +127,7 @@ public class Fuzz {
         return jfuzzRes;
     }
 
-    /**
-     * This method gets all of the Twitch M3U8 VOD domains
-     * from the domains file of the Twitch Recover repository.
-     * @return ArrayList<String>    String arraylist representing all of the Twitch M3U8 VOD domains.
-     */
-    private static ArrayList<String> getDomains(){
-        ArrayList<String> domains=new ArrayList<String>();
-        boolean added=false;
-        try {
-            URL dURL=new URL("https://raw.githubusercontent.com/TwitchRecover/TwitchRecover/main/domains.txt");
-            HttpURLConnection con=(HttpURLConnection) dURL.openConnection();
-            con.setRequestMethod("GET");
-            con.setRequestProperty("User-Agent", "Mozilla/5.0");
-            if(con.getResponseCode()==HttpURLConnection.HTTP_OK){
-                BufferedReader br=new BufferedReader(new InputStreamReader(con.getInputStream()));
-                String line = null;
-                while((line=br.readLine()) !=null){
-                    String response=line.toString();
-                    domains.add(response);
-                    added=true;
-                }
-            }
-        }
-        catch(IOException ignored){}
-        finally{
-            if(!added){     //To execute if the domains from the domains file were not added as a backup.
-                domains.add("https://vod-secure.twitch.tv");
-                domains.add("https://vod-metro.twitch.tv");
-                domains.add("https://d2e2de1etea730.cloudfront.net");
-                domains.add("https://dqrpb9wgowsf5.cloudfront.net");
-                domains.add("https://ds0h3roq6wcgc.cloudfront.net");
-                domains.add("https://dqrpb9wgowsf5.cloudfront.net");
-            }
-        }
-        return domains;
-    }
+
 
     /**
      * Checks if a URL is up by querying it
@@ -188,18 +158,33 @@ public class Fuzz {
      * up to the minute.
      * @param name                  String value which represents the streamer's name.
      * @param streamID              Long value representing the stream ID.
-     * @param timestamp             Long value representing the UNIX timestamp of the minute in question.
+     * @param timestamp             Long value representing the UNIX timestamp of the minute or hour in question.
      * @return ArrayList<String>    String arraylist which represents the working
      * VOD M3U8 URLs.
      */
-    protected static ArrayList<String> BFURLs(String name, long streamID, long timestamp){
+    protected static ArrayList<String> BFURLs(String name, long streamID, long timestamp, BruteForce bf){
         ArrayList<String> results=new ArrayList<String>();
-        for(int i=0; i<60; i++){
-            String url=Compute.URLCompute(name, streamID, timestamp+i);
-            if(checkURL(url)){
-                ArrayList<String> vResults=verifyURL(url);
-                for(String u: vResults){
-                    results.add(u);
+        if(bf==BruteForce.Minute){
+            for(int i=0; i<60; i++){
+                String url=Compute.URLCompute(name, streamID, timestamp+i);
+                for(int j=0; j<domains.size();j++){
+                    if(checkURL(domains.get(j)+url)){
+                        ArrayList<String> vResults=verifyURL(url);
+                        results.addAll(vResults);
+                    }
+                }
+            }
+        }
+        else if(bf==BruteForce.Hour){
+            for(int j=0; j<60; j++){
+                for(int i=0; i<60; i++){
+                    String url=Compute.URLCompute(name, streamID, timestamp+j+i);
+                    for(int k=0; k<domains.size();k++){
+                        if(checkURL(domains.get(k)+url)){
+                            ArrayList<String> vResults=verifyURL(url);
+                            results.addAll(vResults);
+                        }
+                    }
                 }
             }
         }
@@ -214,7 +199,6 @@ public class Fuzz {
      * working VOD M3U8 URLs.
      */
     public static ArrayList<String> verifyURL(String url){
-        ArrayList<String> domains=getDomains();
         ArrayList<String> results=new ArrayList<String>();
         for(String d: domains){
             if(checkURL(d+url)){
@@ -235,10 +219,18 @@ public class Fuzz {
     public static Feeds fuzzQualities(String part1, String part2){
         Feeds feeds=new Feeds();
         for(Quality qual: Quality.values()){
-            if(checkURL(part1+qual.video+part2)){
-                feeds.addEntry(part1+qual.video+part2, qual);
+            if(checkURL(part1+qual.getVideo()+part2)){
+                feeds.addEntry(part1+qual.getVideo()+part2, qual);
             }
         }
         return feeds;
+    }
+
+    /**
+     * Mutator for the domains arraylist.
+     * @param domainList
+     */
+    public static void setDomains(ArrayList<String> domainList){
+        domains=domainList;
     }
 }

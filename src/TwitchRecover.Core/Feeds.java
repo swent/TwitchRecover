@@ -10,13 +10,15 @@
  * If not see http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  *  @author Daylam Tayari daylam@tayari.gg https://github.com/daylamtayari
- *  @version 2.0aH     2.0a Hotfix
+ *  @version 2.0b
  *  Github project home page: https://github.com/TwitchRecover
  *  Twitch Recover repository: https://github.com/TwitchRecover/TwitchRecover
  */
 
 package TwitchRecover.Core;
+
 import TwitchRecover.Core.Enums.Quality;
+
 import java.util.ArrayList;
 
 /**
@@ -171,5 +173,26 @@ public class Feeds {
      */
     public ArrayList<Quality> getQualities(){
         return qualities;
+    }
+
+    /**
+     * This method sorts the qualities,
+     * including the corresponding feeds,
+     * in the order from best to worse.
+     */
+    public void sort(){
+        for(int i=0; i<qualities.size(); i++){
+            int key=qualities.get(i).getOrder();
+            Quality qKey=qualities.get(i);
+            String fKey=feeds.get(i);
+            int j=i-1;
+            while(j>=0 && qualities.get(j).getOrder()>key){
+                qualities.set(j+1, qualities.get(j));
+                feeds.set(j+1, feeds.get(j));
+                j=j-1;
+            }
+            qualities.set(j+1, qKey);
+            feeds.set(j+1, fKey);
+        }
     }
 }

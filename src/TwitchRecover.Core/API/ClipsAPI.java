@@ -10,22 +10,20 @@
  * If not see http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  *  @author Daylam Tayari daylam@tayari.gg https://github.com/daylamtayari
- *  @version 2.0aH     2.0a Hotfix
+ *  @version 2.0b
  *  Github project home page: https://github.com/TwitchRecover
  *  Twitch Recover repository: https://github.com/TwitchRecover/TwitchRecover
  */
 
 package TwitchRecover.Core.API;
 
+import static TwitchRecover.Core.API.API.*;
 import TwitchRecover.Core.Enums.FileExtension;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 
 /**
  * This class handles all
@@ -45,18 +43,12 @@ public class ClipsAPI {
         //API Query:
         try{
             CloseableHttpClient httpClient= HttpClients.createDefault();
-            HttpGet httpget=new HttpGet("https://api.twitch.tv/kraken/clips/"+slug);
-            httpget.addHeader("User-Agent", "Mozilla/5.0");
-            httpget.addHeader("Accept", "application/vnd.twitchtv.v5+json");
-            httpget.addHeader("Client-ID", "ohroxg880bxrq1izlrinohrz3k4vy6");
+            HttpGet httpget=new HttpGet(API_D+"/kraken/clips/"+slug);
+            httpget.addHeader(ACCEPT, TWITCH_ACCEPT);
+            httpget.addHeader(CI, PERSONAL_CI);
             CloseableHttpResponse httpResponse=httpClient.execute(httpget);
-            if(httpResponse.getStatusLine().getStatusCode()==200){
-                BufferedReader br=new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
-                String line;
-                while((line=br.readLine())!=null){
-                    response+=line;
-                }
-                br.close();
+            if(httpResponse.getStatusLine().getStatusCode()==HTTP_OK){
+                response=getResponse(httpResponse);
             }
         }
         catch(Exception ignored){}
@@ -66,11 +58,11 @@ public class ClipsAPI {
             JSONObject vod=jo.getJSONObject("vod");
             if(download){
                 String url=vod.getString("preview_image_url");
-                return url.substring(0, url.indexOf("-preview")) + FileExtension.MP4.fileExtension;
+                return url.substring(0, url.indexOf("-preview")) + FileExtension.MP4.getFE();
             }
             else {
                 int offset = vod.getInt("offset") + 26;
-                return "https://clips-media-assets2.twitch.tv/" + streamID + "-offset-" + offset + FileExtension.MP4.fileExtension;
+                return "https://clips-media-assets2.twitch.tv/" + streamID + "-offset-" + offset + FileExtension.MP4.getFE();
             }
         }
         catch(Exception e){

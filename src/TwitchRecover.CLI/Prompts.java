@@ -10,7 +10,7 @@
  * If not see http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  *  @author Daylam Tayari daylam@tayari.gg https://github.com/daylamtayari
- *  @version 2.0aH     2.0a Hotfix
+ *  @version 2.0b
  *  Github project home page: https://github.com/TwitchRecover
  *  Twitch Recover repository: https://github.com/TwitchRecover/TwitchRecover
  */
@@ -114,10 +114,10 @@ public class Prompts {
             midWord="the";
         }
         if(v!=vType.Mass) {
-            System.out.print("\n\nDo you want to " + o.text + " " + midWord + " " + v.text + "?");
+            System.out.print("\n\nDo you want to " + o.getText() + " " + midWord + " " + v.getText() + "?");
         }
         else{
-            System.out.print("\n\nDo you want to perform a new mass "+ o.text+".");
+            System.out.print("\n\nDo you want to perform a new mass "+ o.getText()+".");
         }
         System.out.print("\nEnter y for yes and n for no: ");
         String response=CLIHandler.sc.next();

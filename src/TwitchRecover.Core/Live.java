@@ -10,7 +10,7 @@
  * If not see http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  *  @author Daylam Tayari daylam@tayari.gg https://github.com/daylamtayari
- *  @version 2.0aH     2.0a Hotfix
+ *  @version 2.0b
  *  Github project home page: https://github.com/TwitchRecover
  *  Twitch Recover repository: https://github.com/TwitchRecover/TwitchRecover
  */
@@ -47,7 +47,7 @@ public class Live {
      * @return Feeds    Feeds object containing all of the feeds of the live stream.
      */
     public Feeds retrieveFeeds(){
-        feeds= LiveAPI.getLiveFeeds(channel);
+        feeds=LiveAPI.getLiveFeeds(channel);
         return feeds;
     }
 
@@ -61,7 +61,7 @@ public class Live {
      */
     public void exportFeed(){
         computeFN();
-        fFP=fp+fn+ FileExtension.TXT.fileExtension;
+        fFP=fp+fn+FileExtension.TXT.getFE();
         FileIO.exportFeeds(feeds, fFP);
     }
 
@@ -79,6 +79,14 @@ public class Live {
      */
     public String getChannel(){
         return channel;
+    }
+
+    /**
+     * Mutator for the channel variable.
+     * @param channel String value representing the channel to process.
+     */
+    public void setChannel(String channel){
+        this.channel=channel;
     }
 
     /**
@@ -100,7 +108,7 @@ public class Live {
     /**
      * Accessor to retrieve one
      * particular feed.
-     * @param id        Integer value representing the list value of the feed to retrieve.
+     * @param id Integer value representing the list value of the feed to retrieve.
      * @return String   String value representing the desired feed URL.
      */
     public String getFeed(int id){
@@ -108,16 +116,8 @@ public class Live {
     }
 
     /**
-     * Mutator for the channel variable.
-     * @param channel   String value representing the channel to process.
-     */
-    public void setChannel(String channel){
-        this.channel=channel;
-    }
-
-    /**
      * Mutator for the file path variable.
-     * @param fp    String value representing the desired output file path.
+     * @param fp String value representing the desired output file path.
      */
     public void setFP(String fp){
         this.fp=FileIO.adjustFP(fp);
